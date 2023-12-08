@@ -1,3 +1,5 @@
+import queue
+
 # all dfas
 dfalist = []
 
@@ -29,7 +31,26 @@ class dfa:
     def isequal(self):
         pass
     def isunreachable(self,q):
-        pass
+        # q is examine state name
+        #  true =>  q is unreachable  &  false =>  q is reachable
+        flag = True 
+        cur_state = self.init_state
+        alphabet = list(self.alphabet)
+        queue_ = queue.Queue(maxsize=0)
+        queue_.put(cur_state)
+        saw_list = []
+        while (not queue_.empty()) and flag:
+            cur_state = queue_.get()
+            if cur_state in saw_list :
+                break
+            if cur_state==q:
+                flag = False
+                break
+            for alpha in alphabet:
+                queue_.put(self.transition.get((cur_state,alpha)))
+            saw_list.append(cur_state)
+            
+        return flag
 
 class   Menu:
     def __init__(self):
@@ -77,7 +98,7 @@ class   Menu:
 
     def isempty(self):
         if dfalist[0].isempty() :
-            print('\tempty\n')
+            print('\tmachine language is empty . \n')
         else:
             print('\tNOT empty\n')
 
