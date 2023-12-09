@@ -28,8 +28,52 @@ class dfa:
         pass
     def minimize(self):
         pass
-    def isequal(self):
-        pass
+    def state_equal(self,other,s1,s2):
+        # s1 belongs to self     /     s2 belongs to other
+        # return true if (both s1 & s2 state are final) or (both s1 & s2 state are NOT final)
+        if (s1 in self.final_state) and (s2 in other.final_state):
+            return True
+        elif (s1 not in self.final_state) and (s2 not in other.final_state):
+            return True
+        else:
+            return False
+        
+    def isequal(self,other):
+        # true  =>  two dfas are equal
+        flag = self.state_equal(other,self.init_state,other.init_state)
+        if flag==False:
+            return flag
+
+        cur_state_s = self.init_state
+        alphabet_s = list(self.alphabet)
+        queue_s = queue.Queue(maxsize=0)
+        queue_s.put(cur_state_s)
+        saw_list_s = []
+        cur_state_o = other.init_state
+        alphabet_o = list(other.alphabet)
+        queue_o = queue.Queue(maxsize=0)
+        queue_o.put(cur_state_o)
+        saw_list_o = []
+
+        while (not queue_s.empty()) and (not queue_o.empty()) and flag:
+            cur_state_s = queue_s.get()
+            cur_state_o = queue_o.get()
+            flag = self.state_equal(other,cur_state_s,cur_state_o)
+            if flag==False:
+                return flag
+            for alpha_s,alpha_o in alphabet_s,alphabet_o:
+                queue_s.put(self.transition.get((cur_state_s,alpha_s)))
+                queue_o.put(other.transition.get((cur_state_o,alpha_o)))
+            # if cur_state_s in saw_list_s :
+            #     break
+            # if cur_state_s==q:
+            #     flag = False
+            #     break
+            # for alpha in alphabet_s:
+            #     queue_s.put(self.transition.get((cur_state_s,alpha)))
+            # saw_list_s.append(cur_state_s)
+        return True
+
     def isunreachable(self,q):
         # q is examine state name
         #  true =>  q is unreachable  &  false =>  q is reachable
@@ -112,7 +156,14 @@ class   Menu:
         pass
 
     def isequal(self):
-        pass
+        self.enter()
+        if dfalist[0].isequal(dfalist[1]):
+            print('two dfas are equal . ')
+        else:
+            print('two dfas are NOT equal . ')
+        temp = dfalist[0]
+        dfalist.clear()
+        dfalist.append(temp)
 
 if __name__=='__main__':
     menu = Menu()
