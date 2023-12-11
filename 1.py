@@ -49,8 +49,46 @@ class dfa:
         
         return False
 
-    def isfinite(self):
-        pass
+    def istrap(self,q):
+        # true  =>  q is a trap    /    false  =>  q in NOT a trap
+        saw_sat = set()
+        alphabet = list(self.alphabet)
+        for alpha in alphabet:
+            saw_sat.add(self.transition.get((q,alpha)))
+        if saw_sat=={q} and (q not in self.final_state):
+            return True
+        else:
+            return False
+
+    def isfinite(self):  #defective
+        # true  =>  language is finite (not correct) /  false  =>  language is not finite  (correct)
+        flag = True
+        string_set = {}
+        if self.isempty():
+            return (True,string_set)
+        final_dict = {}
+        for final in self.final_state:
+            final_dict[final] = 0
+        queue_ = queue.Queue(maxsize=0)
+        queue_.put(self.init_state)
+        alphabet = list(self.alphabet)
+        while True:
+            cur_state = queue_.get()
+            state_set = {cur_state}
+            for alpha in alphabet:
+                state = self.transition.get((cur_state,alpha))
+                if not self.istrap(state):
+                    queue_.put(state)
+                    state_set.add(state)
+            for s in state_set:
+                if s in self.final_state:
+                    final_dict[s] = final_dict.get(s)+1
+                    if final_dict[s]>=2:
+                        return (False,string_set)
+            
+
+        return (flag,string_set)
+
 
     def isaccept(self,x):
         # true  =>  x is accepted     /    false  =>  x is not accepted
@@ -154,7 +192,13 @@ class   Menu:
             print('\tNOT empty\n')
 
     def isfinite(self):
-        pass
+        flag,string_set = dfalist[0].isfinite()
+        if flag==True:
+            print('\nmachine language is finite . ')
+            print(f'number of strings in machine language = {len(string_set)} . ')
+            print(f'accepted strings by dfa are as follow : {string_set}\n')
+        else:
+            print('\nmachine language is NOT finite . \n')
 
     def isaccept(self):
         x = input(f'\nenter a string made of   {dfalist[0].alphabet}   that you want to know if it\'s in dfa language or not . \n')

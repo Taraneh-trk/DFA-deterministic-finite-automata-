@@ -39,3 +39,25 @@
     #             return True
             
     #     return True
+
+
+# cur_state = self.init_state
+#         saw_list = [cur_state]
+#         alphabet = list(self.alphabet)
+#         flag = True
+#         i=0
+#         while True:
+#             saw_set = set()
+#             for alpha in alphabet:
+#                 state = self.transition.get((saw_list[i],alpha));i+=1
+                
+#             for state in saw_set:
+#                 if state in self.final_state:
+#                     final_dict[state] = final_dict.get(state)+1
+#                     if final_dict[state]>=2:
+#                         flag = False
+#                         break
+#             if flag==False:
+#                 break
+
+#         return flag
