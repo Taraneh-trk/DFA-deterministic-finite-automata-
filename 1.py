@@ -51,8 +51,25 @@ class dfa:
 
     def isfinite(self):
         pass
-    def isaccept(self):
-        pass
+
+    def isaccept(self,x):
+        # true  =>  x is accepted     /    false  =>  x is not accepted
+        string = x
+        cur_state = self.init_state
+        if cur_state in self.final_state:
+            flag = True
+        else:
+            flag = False
+        while len(string)!=0:
+            cur_state = self.transition.get((cur_state,string[0]))
+            string = string[1:]  # omitting first character
+            if cur_state in self.final_state:
+                flag = True
+            else:
+                flag = False
+        
+        return flag
+
     def minimize(self):
         pass
 
@@ -140,7 +157,11 @@ class   Menu:
         pass
 
     def isaccept(self):
-        pass
+        x = input(f'\nenter a string made of   {dfalist[0].alphabet}   that you want to know if it\'s in dfa language or not . \n')
+        if dfalist[0].isaccept(x):
+            print(f'\n{x} string is accepted by dfa . \n')
+        else:
+            print(f'\n{x} string is NOT accepted by dfa . \n')
 
     def minimize(self):
         pass
