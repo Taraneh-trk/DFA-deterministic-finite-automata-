@@ -145,8 +145,56 @@ class dfa:
         final_state = {}
         transition = dict()
 
-        finals = self.final_state.copy()
-        non_finals = (self.state - finals).copy()
+        finals = list(self.final_state)
+        non_finals = list(self.state - finals)
+        merge_state = []
+        for state_index in range(len(non_finals)-1):
+            for cmp_state_index in range(state_index+1,len(non_finals)):
+                falg_list = []
+                falg_list.append(self.state_equal(self,non_finals[state_index],non_finals[cmp_state_index]))
+                for alpha in alphabet:
+                    s1 = self.transition.get((non_finals[state_index],alpha))
+                    s2 = self.transition.get((non_finals[cmp_state_index],alpha))
+                    falg_list.append(self.state_equal(self,s1,s2))
+                if all(falg_list):
+                    for lst in merge_state:
+                        if (non_finals[cmp_state_index] in lst) or (non_finals[state_index] in lst):
+                            lst1 = set(lst)
+                            lst1.add(non_finals[cmp_state_index])
+                            lst1.add(non_finals[state_index])
+                            lst1 = list(lst1)
+                            index = merge_state.index(lst)
+                            merge_state[index] = lst1
+                        else:
+                            merge = [non_finals[state_index],non_finals[cmp_state_index]]
+                            merge_state.append(merge)
+
+        state_dict = dict()
+        for state_lst in merge_state:
+            """ (constructors states name)[states name] : 
+            (alpha , set to tuple(next_state for any alpha)[transition], 
+            is final or not [finals], )"""
+            key = tuple(state_lst)
+            
+            value1 = list() #(alpha_,)
+            for alpha_ in alphabet:
+                tran = set()
+                for state in  state_lst:
+                    tran.add(self.transition.get((state,alpha_)))
+                tran = tuple(tran)
+                value1.append((alpha_,tran))
+
+            for state in state_lst:
+                if state in self.final_state:
+                    value2 = True
+                    break
+            else:
+                value2 = False
+
+            state_dict[key] = (value1,value2)
+        
+        
+            
 
         return dfa(alphabet,state,init_state,final_state,transition)
 
