@@ -138,8 +138,18 @@ class dfa:
         
         return flag
 
-    def minimize(self):
-        pass
+    def minimize(self): #not done yet
+        alphabet = self.alphabet
+        state = {}
+        init_state = self.init_state
+        final_state = {}
+        transition = dict()
+
+        finals = self.final_state.copy()
+        non_finals = (self.state - finals).copy()
+
+        return dfa(alphabet,state,init_state,final_state,transition)
+
 
     def state_equal(self,other,s1,s2):
         # s1 belongs to self     /     s2 belongs to other
@@ -169,7 +179,16 @@ class dfa:
                     saw_list.insert(len(saw_list)-1,new_tuple)
         
         return True
-
+    
+    def show(self):
+        print(f'\nalphabet : {self.alphabet}')
+        print(f'states : {self.state}')
+        print(f'initial state : {self.init_state}')
+        print(f'final states : {self.final_state}')
+        print('transitions : \n')
+        for (cur_state,alpha),next_state in self.transition.items():
+            print(f'{cur_state}   --({alpha})-->   {next_state}')
+        print()
 
 class   Menu:
     def __init__(self):
@@ -181,7 +200,8 @@ class   Menu:
             print('\t4- is x string accepted or not ? ')
             print('\t5- minimizing dfa')
             print('\t6- are the two dfa equal ?')
-            print('\t7- exit')
+            print('\t7- show machine')
+            print('\t8- exit')
             choose = int(input('enter your selection : \n'))
             if choose==1:
                 self.enter()
@@ -196,6 +216,8 @@ class   Menu:
             elif choose==6:
                 self.isequal()
             elif choose==7:
+                self.show()
+            elif choose==8:
                 exit()
 
     def enter(self):
@@ -238,7 +260,9 @@ class   Menu:
             print(f'\n{x} string is NOT accepted by dfa . \n')
 
     def minimize(self):
-        pass
+        mini_dfa = dfalist[0].minimize()
+        print('\nminimized dfa : \n')
+        mini_dfa.show()
 
     def isequal(self):
         print('\n HINT : DFAS ALPHABET SHOULD BE THE SAME . \n')
@@ -250,6 +274,9 @@ class   Menu:
         temp = dfalist[0]
         dfalist.clear()
         dfalist.append(temp)
+    
+    def show(self):
+        dfalist[0].show()
 
 if __name__=='__main__':
     menu = Menu()
