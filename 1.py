@@ -60,34 +60,64 @@ class dfa:
         else:
             return False
 
-    def isfinite(self):  #defective
-        # true  =>  language is finite (not correct) /  false  =>  language is not finite  (correct)
+    def hasloop(self,state,saw_state_set):
+        # true =>  (it has aloop on itself)  and  (it is not final)  and  (it was sawn before)
+        flag = False
+        alphabet = list(self.alphabet)
+        for alpha in alphabet:
+            next_state = self.transition.get((state,alpha))
+            if next_state==state:
+                flag = True
+                break
+        return flag and (state not in self.final_state) and (state in saw_state_set)
+
+    def isfinite(self):
+        # true  =>  language is finite  /  false  =>  language is not finite  
         flag = True
-        string_set = {}
+        string_set_accept = {''}
+        string_set_all = ['']
         if self.isempty():
-            return (True,string_set)
+            return (True,{})
         final_dict = {}
         for final in self.final_state:
             final_dict[final] = 0
         queue_ = queue.Queue(maxsize=0)
         queue_.put(self.init_state)
         alphabet = list(self.alphabet)
-        while True:
+        counter=0
+        while not queue_.empty():
             cur_state = queue_.get()
-            state_set = {cur_state}
+            state_set = set() 
+            set_cur_state = set()
             for alpha in alphabet:
                 state = self.transition.get((cur_state,alpha))
                 if not self.istrap(state):
+                    temp = string_set_all.copy()
+                    for char in temp:
+                        char+=alpha
+                        string_set_all.append(char)
+                        if self.isaccept(char):
+                            string_set_accept.add(char)
+                set_cur_state.add(state)
+            for state in set_cur_state:
+                if (not self.istrap(state)):
                     queue_.put(state)
                     state_set.add(state)
+
             for s in state_set:
                 if s in self.final_state:
                     final_dict[s] = final_dict.get(s)+1
                     if final_dict[s]>=2:
-                        return (False,string_set)
+                        print(f'state name = {s}      size = {final_dict[s]}')
+                        return (False,{})
+            counter+=1;
+            if counter==1000:
+                break
             
 
-        return (flag,string_set)
+        if self.init_state not in self.final_state:
+            string_set_accept.remove('')
+        return (flag,string_set_accept)
 
 
     def isaccept(self,x):
