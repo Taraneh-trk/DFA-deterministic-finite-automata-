@@ -138,18 +138,19 @@ class dfa:
         
         return flag
 
-    def minimize(self): #not done yet
+    def minimize(self): #not done yet      *********OMMITING UNREACHABLE
         alphabet = self.alphabet
-        state = {}
+        states = set()
         init_state = self.init_state
-        final_state = {}
+        final_state = set()
         transition = dict()
 
         finals = list(self.final_state)
-        non_finals = list(self.state - finals)
+        non_finals = list(self.state - set(finals))
+        # print('final = ',finals,'nonfinal = ',non_finals)
         merge_state = []
-        for state_index in range(len(non_finals)-1):
-            for cmp_state_index in range(state_index+1,len(non_finals)):
+        for state_index in range(len(non_finals)):
+            for cmp_state_index in range(state_index,len(non_finals)):
                 falg_list = []
                 falg_list.append(self.state_equal(self,non_finals[state_index],non_finals[cmp_state_index]))
                 for alpha in alphabet:
@@ -165,25 +166,50 @@ class dfa:
                             lst1 = list(lst1)
                             index = merge_state.index(lst)
                             merge_state[index] = lst1
-                        else:
-                            merge = [non_finals[state_index],non_finals[cmp_state_index]]
-                            merge_state.append(merge)
+                    else:
+                        merge = list({non_finals[state_index],non_finals[cmp_state_index]})
+                        merge_state.append(merge)
+
+        for state_index in range(len(finals)):
+            for cmp_state_index in range(state_index,len(finals)):
+                falg_list = []
+                falg_list.append(self.state_equal(self,finals[state_index],finals[cmp_state_index]))
+                for alpha in alphabet:
+                    s1 = self.transition.get((finals[state_index],alpha))
+                    s2 = self.transition.get((finals[cmp_state_index],alpha))
+                    falg_list.append(self.state_equal(self,s1,s2))
+                if all(falg_list):
+                    for lst in merge_state:
+                        if (finals[cmp_state_index] in lst) or (finals[state_index] in lst):
+                            lst1 = set(lst)
+                            lst1.add(finals[cmp_state_index])
+                            lst1.add(finals[state_index])
+                            lst1 = list(lst1)
+                            index = merge_state.index(lst)
+                            merge_state[index] = lst1
+                            break
+                    else:
+                        merge = list({finals[state_index],finals[cmp_state_index]})
+                        merge_state.append(merge)
 
         state_dict = dict()
         for state_lst in merge_state:
             """ (constructors states name)[states name] : 
             (alpha , set to tuple(next_state for any alpha)[transition], 
             is final or not [finals], )"""
-            key = tuple(state_lst)
+            key = tuple(state_lst) #should be set
             
             value1 = list() #(alpha_,)
             for alpha_ in alphabet:
                 tran = set()
                 for state in  state_lst:
                     tran.add(self.transition.get((state,alpha_)))
-                tran = tuple(tran)
+                    for mrg in merge_state:
+                        if tran.issubset(set(mrg)):
+                            tran = set(mrg)
                 value1.append((alpha_,tran))
 
+            value2 = False
             for state in state_lst:
                 if state in self.final_state:
                     value2 = True
@@ -193,10 +219,17 @@ class dfa:
 
             state_dict[key] = (value1,value2)
         
-        
-            
+        # print('state dict = ',state_dict,'mergeable = ',merge_state)
 
-        return dfa(alphabet,state,init_state,final_state,transition)
+        for key_,val in state_dict.items():
+            states.add(key_)
+            if val[1]==True:
+                final_state.add(key_)
+            for i in val[0]:
+                next_state =key_ if set(key_)==i[1] else tuple(i[1])
+                transition[(key_,i[0])] = next_state 
+
+        return dfa(alphabet,states,init_state,final_state,transition)
 
 
     def state_equal(self,other,s1,s2):

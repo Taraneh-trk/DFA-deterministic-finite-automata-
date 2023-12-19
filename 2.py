@@ -61,3 +61,5 @@
 #                 break
 
 #         return flag
+
+print(all([True,True,1,1,0]))
