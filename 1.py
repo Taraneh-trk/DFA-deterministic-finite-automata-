@@ -138,15 +138,23 @@ class dfa:
         
         return flag
 
-    def minimize(self): #not done yet      *********OMMITING UNREACHABLE
+    def minimize(self): #debugging.....
+        # ommit unreachable states
+        unreachable_state = set()
+        for st in self.state:
+            if self.isunreachable(st):
+                unreachable_state.add(st)
+        state_without_unreachable = self.state - unreachable_state
+        final_without_unreachable = self.final_state - unreachable_state
+
         alphabet = self.alphabet
         states = set()
         init_state = self.init_state
         final_state = set()
         transition = dict()
 
-        finals = list(self.final_state)
-        non_finals = list(self.state - set(finals))
+        finals = list(final_without_unreachable)
+        non_finals = list(state_without_unreachable - set(finals))
         # print('final = ',finals,'nonfinal = ',non_finals)
         merge_state = []
         for state_index in range(len(non_finals)):
@@ -226,7 +234,7 @@ class dfa:
             if val[1]==True:
                 final_state.add(key_)
             for i in val[0]:
-                next_state =key_ if set(key_)==i[1] else tuple(i[1])
+                next_state = key_ if set(key_)==i[1] else tuple(i[1])
                 transition[(key_,i[0])] = next_state 
 
         return dfa(alphabet,states,init_state,final_state,transition)
