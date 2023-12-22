@@ -139,6 +139,7 @@ class dfa:
         return flag
 
     def minimize(self): #debugging.....
+        # bug :  if (e & s) are mergeable and (a & e & s) are mergeable too so it can not be two dicerete state for these two
         # ommit unreachable states
         unreachable_state = set()
         for st in self.state:
