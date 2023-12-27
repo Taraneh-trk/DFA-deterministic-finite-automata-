@@ -19,20 +19,17 @@ class dfa:
         alphabet = list(self.alphabet)
         queue_ = queue.Queue(maxsize=0)
         queue_.put(cur_state)
-        nsaw_list = []
-        nsaw_list.extend(list(self.state))
-        while (not queue_.empty()) and flag:
+        i=0
+        while True:
             cur_state = queue_.get()
-            if cur_state in nsaw_list :
-                nsaw_list.remove(cur_state)
             if cur_state==q:
                 flag = False
                 break
             for alpha in alphabet:
                 queue_.put(self.transition.get((cur_state,alpha)))
-            nsaw_list.append(cur_state)
-            if len(nsaw_list)==0:
+            if i==1000:
                 break
+            i+=1
 
         return flag
 
@@ -138,8 +135,7 @@ class dfa:
         
         return flag
 
-    def minimize(self): #debugging.....
-        # bug :  if (e & s) are mergeable and (a & e & s) are mergeable too so it can not be two dicerete state for these two
+    def minimize(self): 
         # ommit unreachable states
         unreachable_state = set()
         for st in self.state:
@@ -148,97 +144,102 @@ class dfa:
         state_without_unreachable = self.state - unreachable_state
         final_without_unreachable = self.final_state - unreachable_state
 
+        print(state_without_unreachable , final_without_unreachable)
+
         alphabet = self.alphabet
         states = set()
-        init_state = self.init_state
+        init_state = self.init_state   #**********
         final_state = set()
         transition = dict()
 
         finals = list(final_without_unreachable)
         non_finals = list(state_without_unreachable - set(finals))
-        # print('final = ',finals,'nonfinal = ',non_finals)
-        merge_state = []
-        for state_index in range(len(non_finals)):
-            for cmp_state_index in range(state_index,len(non_finals)):
-                falg_list = []
-                falg_list.append(self.state_equal(self,non_finals[state_index],non_finals[cmp_state_index]))
-                for alpha in alphabet:
-                    s1 = self.transition.get((non_finals[state_index],alpha))
-                    s2 = self.transition.get((non_finals[cmp_state_index],alpha))
-                    falg_list.append(self.state_equal(self,s1,s2))
-                if all(falg_list):
-                    for lst in merge_state:
-                        if (non_finals[cmp_state_index] in lst) or (non_finals[state_index] in lst):
-                            lst1 = set(lst)
-                            lst1.add(non_finals[cmp_state_index])
-                            lst1.add(non_finals[state_index])
-                            lst1 = list(lst1)
-                            index = merge_state.index(lst)
-                            merge_state[index] = lst1
-                    else:
-                        merge = list({non_finals[state_index],non_finals[cmp_state_index]})
-                        merge_state.append(merge)
-
-        for state_index in range(len(finals)):
-            for cmp_state_index in range(state_index,len(finals)):
-                falg_list = []
-                falg_list.append(self.state_equal(self,finals[state_index],finals[cmp_state_index]))
-                for alpha in alphabet:
-                    s1 = self.transition.get((finals[state_index],alpha))
-                    s2 = self.transition.get((finals[cmp_state_index],alpha))
-                    falg_list.append(self.state_equal(self,s1,s2))
-                if all(falg_list):
-                    for lst in merge_state:
-                        if (finals[cmp_state_index] in lst) or (finals[state_index] in lst):
-                            lst1 = set(lst)
-                            lst1.add(finals[cmp_state_index])
-                            lst1.add(finals[state_index])
-                            lst1 = list(lst1)
-                            index = merge_state.index(lst)
-                            merge_state[index] = lst1
-                            break
-                    else:
-                        merge = list({finals[state_index],finals[cmp_state_index]})
-                        merge_state.append(merge)
-
-        state_dict = dict()
-        for state_lst in merge_state:
-            """ (constructors states name)[states name] : 
-            (alpha , set to tuple(next_state for any alpha)[transition], 
-            is final or not [finals], )"""
-            key = tuple(state_lst) #should be set
-            
-            value1 = list() #(alpha_,)
-            for alpha_ in alphabet:
-                tran = set()
-                for state in  state_lst:
-                    tran.add(self.transition.get((state,alpha_)))
-                    for mrg in merge_state:
-                        if tran.issubset(set(mrg)):
-                            tran = set(mrg)
-                value1.append((alpha_,tran))
-
-            value2 = False
-            for state in state_lst:
-                if state in self.final_state:
-                    value2 = True
-                    break
-            else:
-                value2 = False
-
-            state_dict[key] = (value1,value2)
+        print('final = ',finals,'nonfinal = ',non_finals)
         
-        # print('state dict = ',state_dict,'mergeable = ',merge_state)
+        merge_state_nf = [set(non_finals)]
+        merge_state_next_nf = merge_state_nf.copy()
+        flag_repeat = False
+        while flag_repeat == False:
+            for s1 in non_finals:
+                for s2 in non_finals[non_finals.index(s1)+1:]:
+                    if not self.mergable(s1,s2,alphabet,merge_state_next_nf):
+                        merge_state_next_nf = self.seperate_in_merge_state(merge_state_nf,merge_state_next_nf,s1,s2,alphabet)
+                        print('\nmerg : ',merge_state_next_nf)
+            if merge_state_nf == merge_state_next_nf:
+                flag_repeat = True
+            merge_state_nf = merge_state_next_nf.copy()
 
-        for key_,val in state_dict.items():
-            states.add(key_)
-            if val[1]==True:
-                final_state.add(key_)
-            for i in val[0]:
-                next_state = key_ if set(key_)==i[1] else tuple(i[1])
-                transition[(key_,i[0])] = next_state 
+        merge_state_f = [set(finals)]
+        merge_state_next_f = merge_state_f.copy()
+        flag_repeat = False
+        while flag_repeat == False:
+            for s1 in finals:
+                for s2 in finals[finals.index(s1)+1:]:
+                    if not self.mergable(s1,s2,alphabet,merge_state_next_f):
+                        self.seperate_in_merge_state(merge_state_f,merge_state_next_f,s1,s2,alphabet)
+            if merge_state_f == merge_state_next_f:
+                flag_repeat = True
+            merge_state_f = merge_state_next_f.copy()
+
+        print('\nmergables nf: ',merge_state_nf)
+        print('\nmergables f: ',merge_state_f)
+        
+        merge_state = merge_state_f + merge_state_nf
+
 
         return dfa(alphabet,states,init_state,final_state,transition)
+
+    def mergable(self,s1,s2,alphabet,merge_state):
+        for alpha in alphabet:
+            s1_alpha = self.transition.get((s1,alpha))
+            s2_alpha = self.transition.get((s2,alpha))
+            if not self.is_in_one_set(merge_state,s1_alpha,s2_alpha):
+                return False
+        return True
+
+    def is_in_one_set(self,merge_state_nf,merge_state_f,s1,s2):
+        subset = {s1,s2}
+        for st in merge_state_nf:
+            if subset.issubset(st):
+                return True
+        for st in merge_state_f:
+            if subset.issubset(st):
+                return True
+        return False
+
+    def seperate_in_merge_state(self,merge_state,merge_state_next,s1,s2,alphabet):
+        temp= list()
+        index = 0
+        flag_remove = False
+        print('merge in sep start',merge_state_next)
+        for mrg in merge_state_next:
+            if {s1,s2}.issubset(mrg):
+                index = merge_state_next.index(mrg)
+                mrg.remove(s2)
+                temp.append(mrg)
+                flag_remove = True
+        if flag_remove == True:
+            flag = False
+            for mrg_index in range(len(merge_state_next)):
+                if mrg_index == index:
+                    continue
+                for s3 in merge_state_next[mrg_index]:
+                    if self.mergable(s2,s3,alphabet,merge_state_next):
+                        merge_state_next[mrg_index].add(s2)
+                        temp.append(merge_state_next[mrg_index])
+                        flag = True
+                    else:
+                        temp.append(merge_state_next[mrg_index])
+                    break
+            if flag == False:
+                temp.append({s2,})
+            print('merge in sep end',temp)
+            return temp
+        return merge_state_next
+        
+
+       
+
 
 
     def state_equal(self,other,s1,s2):
