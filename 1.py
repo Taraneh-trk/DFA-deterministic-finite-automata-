@@ -3,6 +3,13 @@ import queue
 # all dfas
 dfalist = []
 
+def copy(self,me):
+    new_list = []
+    for s in self:
+        st = s.copy()
+        new_list.append(st)
+    return new_list
+
 class dfa:
     def __init__(self,alphabet,state,init_state,final_state,transition):
         self.alphabet =  alphabet #set of alphabet
@@ -157,29 +164,26 @@ class dfa:
         print('final = ',finals,'nonfinal = ',non_finals)
         
         merge_state_nf = [set(non_finals)]
-        merge_state_next_nf = merge_state_nf.copy()
-        flag_repeat = False
+        merge_state_next_nf = copy(merge_state_nf,'me')
+        merge_state_f = [set(finals)]
+        merge_state_next_f = copy(merge_state_f,'me')
+        flag_repeat = False;level=0
         while flag_repeat == False:
             for s1 in non_finals:
                 for s2 in non_finals[non_finals.index(s1)+1:]:
-                    if not self.mergable(s1,s2,alphabet,merge_state_next_nf):
-                        merge_state_next_nf = self.seperate_in_merge_state(merge_state_nf,merge_state_next_nf,s1,s2,alphabet)
+                    if not self.mergable(s1,s2,alphabet,merge_state_next_nf,merge_state_next_f):
+                        merge_state_next_nf = self.seperate_in_merge_state(merge_state_nf,merge_state_next_nf,merge_state_next_f,s1,s2,alphabet)
                         print('\nmerg : ',merge_state_next_nf)
-            if merge_state_nf == merge_state_next_nf:
-                flag_repeat = True
-            merge_state_nf = merge_state_next_nf.copy()
-
-        merge_state_f = [set(finals)]
-        merge_state_next_f = merge_state_f.copy()
-        flag_repeat = False
-        while flag_repeat == False:
             for s1 in finals:
                 for s2 in finals[finals.index(s1)+1:]:
-                    if not self.mergable(s1,s2,alphabet,merge_state_next_f):
-                        self.seperate_in_merge_state(merge_state_f,merge_state_next_f,s1,s2,alphabet)
-            if merge_state_f == merge_state_next_f:
+                    if not self.mergable(s1,s2,alphabet,merge_state_next_f,merge_state_next_nf):
+                        merge_state_next_f = self.seperate_in_merge_state(merge_state_f,merge_state_next_f,merge_state_next_nf,s1,s2,alphabet)
+            print('level = ',level);level+=1
+            if merge_state_nf == merge_state_next_nf and merge_state_f == merge_state_next_f:
                 flag_repeat = True
-            merge_state_f = merge_state_next_f.copy()
+            merge_state_nf = copy(merge_state_next_nf,'me')
+            merge_state_f = copy(merge_state_next_f,'me')
+            
 
         print('\nmergables nf: ',merge_state_nf)
         print('\nmergables f: ',merge_state_f)
@@ -189,11 +193,11 @@ class dfa:
 
         return dfa(alphabet,states,init_state,final_state,transition)
 
-    def mergable(self,s1,s2,alphabet,merge_state):
+    def mergable(self,s1,s2,alphabet,merge_state_nf,merge_state_f):
         for alpha in alphabet:
             s1_alpha = self.transition.get((s1,alpha))
             s2_alpha = self.transition.get((s2,alpha))
-            if not self.is_in_one_set(merge_state,s1_alpha,s2_alpha):
+            if not self.is_in_one_set(merge_state_nf,merge_state_f,s1_alpha,s2_alpha):
                 return False
         return True
 
@@ -207,38 +211,39 @@ class dfa:
                 return True
         return False
 
-    def seperate_in_merge_state(self,merge_state,merge_state_next,s1,s2,alphabet):
+    def seperate_in_merge_state(self,merge_state,merge_state_next_nf,merge_state_next_f,s1,s2,alphabet):
         temp= list()
         index = 0
         flag_remove = False
-        print('merge in sep start',merge_state_next)
-        for mrg in merge_state_next:
+        print('merge in sep start',merge_state_next_nf)
+        print('merge before start : ',merge_state)
+        mrg_temp = copy(merge_state,'me')
+        for mrg in merge_state_next_nf:
             if {s1,s2}.issubset(mrg):
-                index = merge_state_next.index(mrg)
+                index = merge_state_next_nf.index(mrg)
                 mrg.remove(s2)
                 temp.append(mrg)
                 flag_remove = True
         if flag_remove == True:
             flag = False
-            for mrg_index in range(len(merge_state_next)):
+            for mrg_index in range(len(merge_state_next_nf)):
                 if mrg_index == index:
                     continue
-                for s3 in merge_state_next[mrg_index]:
-                    if self.mergable(s2,s3,alphabet,merge_state_next):
-                        merge_state_next[mrg_index].add(s2)
-                        temp.append(merge_state_next[mrg_index])
+                for s3 in merge_state_next_nf[mrg_index]:
+                    if self.mergable(s2,s3,alphabet,merge_state,merge_state_next_f):
+                        merge_state_next_nf[mrg_index].add(s2)
+                        temp.append(merge_state_next_nf[mrg_index])
                         flag = True
                     else:
-                        temp.append(merge_state_next[mrg_index])
+                        temp.append(merge_state_next_nf[mrg_index])
                     break
             if flag == False:
                 temp.append({s2,})
             print('merge in sep end',temp)
+            merge_state = copy(mrg_temp,'me')
+            print('merge before end : ',merge_state)
             return temp
-        return merge_state_next
-        
-
-       
+        return merge_state_next_nf
 
 
 
