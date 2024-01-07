@@ -111,42 +111,42 @@
 #                         merge = list({finals[state_index],finals[cmp_state_index]})
 #                         merge_state.append(merge)
 
-#         state_dict = dict()
-#         for state_lst in merge_state:
-#             """ (constructors states name)[states name] : 
-#             (alpha , set to tuple(next_state for any alpha)[transition], 
-#             is final or not [finals], )"""
-#             key = tuple(state_lst) #should be set
+        # state_dict = dict()
+        # for state_lst in merge_state:
+        #     """ (constructors states name)[states name] : 
+        #     (alpha , set to tuple(next_state for any alpha)[transition], 
+        #     is final or not [finals], )"""
+        #     key = tuple(state_lst) #should be set
             
-#             value1 = list() #(alpha_,)
-#             for alpha_ in alphabet:
-#                 tran = set()
-#                 for state in  state_lst:
-#                     tran.add(self.transition.get((state,alpha_)))
-#                     for mrg in merge_state:
-#                         if tran.issubset(set(mrg)):
-#                             tran = set(mrg)
-#                 value1.append((alpha_,tran))
+        #     value1 = list() #(alpha_,)
+        #     for alpha_ in alphabet:
+        #         tran = set()
+        #         for state in  state_lst:
+        #             tran.add(self.transition.get((state,alpha_)))
+        #             for mrg in merge_state:
+        #                 if tran.issubset(set(mrg)):
+        #                     tran = set(mrg)
+        #         value1.append((alpha_,tran))
 
-#             value2 = False
-#             for state in state_lst:
-#                 if state in self.final_state:
-#                     value2 = True
-#                     break
-#             else:
-#                 value2 = False
+        #     value2 = False
+        #     for state in state_lst:
+        #         if state in self.final_state:
+        #             value2 = True
+        #             break
+        #     else:
+        #         value2 = False
 
-#             state_dict[key] = (value1,value2)
+        #     state_dict[key] = (value1,value2)
         
-#         print('state dict = ',state_dict,'\nmergeable = ',merge_state)
+        # print('state dict = ',state_dict,'\nmergeable = ',merge_state)
 
-#         for key_,val in state_dict.items():
-#             states.add(key_)
-#             if val[1]==True:
-#                 final_state.add(key_)
-#             for i in val[0]:
-#                 next_state = key_ if set(key_)==i[1] else tuple(i[1])
-#                 transition[(key_,i[0])] = next_state 
+        # for key_,val in state_dict.items():
+        #     states.add(key_)
+        #     if val[1]==True:
+        #         final_state.add(key_)
+        #     for i in val[0]:
+        #         next_state = key_ if set(key_)==i[1] else tuple(i[1])
+        #         transition[(key_,i[0])] = next_state 
 
 
 # lst = [{1,2},{3,4}]
@@ -173,6 +173,12 @@
 
 # print(temp)
 
-s = set()
-string = 'taras'
-print({string,})
+# s = set()
+# string = 'taras'
+# print({string,})
+
+st = {1,2,3,4}
+s1=tuple(st)
+s2=tuple(st)
+print(s1)
+print(s2)

@@ -112,7 +112,7 @@ class dfa:
                 if s in self.final_state:
                     final_dict[s] = final_dict.get(s)+1
                     if final_dict[s]>=2:
-                        print(f'state name = {s}      size = {final_dict[s]}')
+                        # print(f'state name = {s}      size = {final_dict[s]}')
                         return (False,{})
             counter+=1;
             if counter==1000:
@@ -155,13 +155,13 @@ class dfa:
 
         alphabet = self.alphabet
         states = set()
-        init_state = self.init_state   #**********
+        init_state = self.init_state
         final_state = set()
         transition = dict()
 
         finals = list(final_without_unreachable)
         non_finals = list(state_without_unreachable - set(finals))
-        print('final = ',finals,'nonfinal = ',non_finals)
+        # print('final = ',finals,'nonfinal = ',non_finals)
         
         merge_state_nf = [set(non_finals)]
         merge_state_next_nf = copy(merge_state_nf,'me')
@@ -173,23 +173,42 @@ class dfa:
                 for s2 in non_finals[non_finals.index(s1)+1:]:
                     if not self.mergable(s1,s2,alphabet,merge_state_next_nf,merge_state_next_f):
                         merge_state_next_nf = self.seperate_in_merge_state(merge_state_nf,merge_state_next_nf,merge_state_next_f,s1,s2,alphabet)
-                        print('\nmerg : ',merge_state_next_nf)
+                        # print('\nmerg : ',merge_state_next_nf)
             for s1 in finals:
                 for s2 in finals[finals.index(s1)+1:]:
                     if not self.mergable(s1,s2,alphabet,merge_state_next_f,merge_state_next_nf):
                         merge_state_next_f = self.seperate_in_merge_state(merge_state_f,merge_state_next_f,merge_state_next_nf,s1,s2,alphabet)
-            print('level = ',level);level+=1
+            # print('level = ',level);level+=1
             if merge_state_nf == merge_state_next_nf and merge_state_f == merge_state_next_f:
                 flag_repeat = True
             merge_state_nf = copy(merge_state_next_nf,'me')
             merge_state_f = copy(merge_state_next_f,'me')
             
 
-        print('\nmergables nf: ',merge_state_nf)
-        print('\nmergables f: ',merge_state_f)
+        # print('\nmergables nf: ',merge_state_nf)
+        # print('\nmergables f: ',merge_state_f)
         
         merge_state = merge_state_f + merge_state_nf
 
+        # print(f'merge_state = {merge_state}')
+
+        for s in merge_state:
+            states.add(tuple(s))
+            if init_state in s:
+                init_state = tuple(s)
+            for fs in self.final_state:
+                if fs in s:
+                    final_state.add(tuple(s))
+            
+        #transition
+        for s in merge_state:
+            name = tuple(s)
+            for alpha in alphabet:
+                name0_alpha = self.transition.get((name[0],alpha))
+                for q in states:
+                    if name0_alpha in q:
+                        name_alpha = q
+                transition[(name,alpha)] = name_alpha
 
         return dfa(alphabet,states,init_state,final_state,transition)
 
@@ -215,8 +234,8 @@ class dfa:
         temp= list()
         index = 0
         flag_remove = False
-        print('merge in sep start',merge_state_next_nf)
-        print('merge before start : ',merge_state)
+        # print('merge in sep start',merge_state_next_nf)
+        # print('merge before start : ',merge_state)
         mrg_temp = copy(merge_state,'me')
         for mrg in merge_state_next_nf:
             if {s1,s2}.issubset(mrg):
@@ -239,9 +258,9 @@ class dfa:
                     break
             if flag == False:
                 temp.append({s2,})
-            print('merge in sep end',temp)
+            # print('merge in sep end',temp)
             merge_state = copy(mrg_temp,'me')
-            print('merge before end : ',merge_state)
+            # print('merge before end : ',merge_state)
             return temp
         return merge_state_next_nf
 
@@ -317,6 +336,7 @@ class   Menu:
                 exit()
 
     def enter(self):
+        dfalist.clear()
         print('please enter dfa\'s data : ')
         alphabet = set(input('write each letter of your alphabet and leave a space between each of them : \n').strip(' ').split(' '))
         state = set(input('write state\'s name of your dfa and leave a space between each of them : \n').strip(' ').split(' '))
