@@ -26,15 +26,19 @@ class dfa:
         alphabet = list(self.alphabet)
         queue_ = queue.Queue(maxsize=0)
         queue_.put(cur_state)
-        i=0
-        while True:
+        saw_list = [self.init_state]
+        i=0;mox=len(self.state)*len(self.alphabet)
+        while not queue_.empty():
             cur_state = queue_.get()
+            saw_list.append(cur_state)
             if cur_state==q:
                 flag = False
                 break
             for alpha in alphabet:
-                queue_.put(self.transition.get((cur_state,alpha)))
-            if i==1000:
+                goes = self.transition.get((cur_state,alpha))
+                if goes not in saw_list:
+                    queue_.put(goes)
+            if i==mox:  # mox=1000
                 break
             i+=1
 
@@ -143,6 +147,9 @@ class dfa:
         return flag
 
     def minimize(self): 
+        if self.isempty():
+            print('machine language is empty . ')
+            return self
         # ommit unreachable states
         unreachable_state = set()
         for st in self.state:
@@ -204,6 +211,7 @@ class dfa:
         for s in merge_state:
             name = tuple(s)
             for alpha in alphabet:
+                # print(name," ")
                 name0_alpha = self.transition.get((name[0],alpha))
                 for q in states:
                     if name0_alpha in q:
@@ -335,8 +343,9 @@ class   Menu:
             elif choose==8:
                 exit()
 
-    def enter(self):
-        dfalist.clear()
+    def enter(self,note=''):
+        if note!='from equal':
+            dfalist.clear()
         print('please enter dfa\'s data : ')
         alphabet = set(input('write each letter of your alphabet and leave a space between each of them : \n').strip(' ').split(' '))
         state = set(input('write state\'s name of your dfa and leave a space between each of them : \n').strip(' ').split(' '))
@@ -358,6 +367,7 @@ class   Menu:
             print('\tmachine language is empty . \n')
         else:
             print('\tNOT empty\n')
+        # print(dfalist[0].isunreachable('q3'))
 
     def isfinite(self):
         flag,string_set = dfalist[0].isfinite()
@@ -382,7 +392,7 @@ class   Menu:
 
     def isequal(self):
         print('\n HINT : DFAS ALPHABET SHOULD BE THE SAME . \n')
-        self.enter()
+        self.enter('from equal')
         if dfalist[0].isequal(dfalist[1]):
             print('\ntwo dfas are equal . \n')
         else:
