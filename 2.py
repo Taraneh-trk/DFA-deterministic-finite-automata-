@@ -177,8 +177,11 @@
 # string = 'taras'
 # print({string,})
 
-st = {1,2,3,4}
-s1=tuple(st)
-s2=tuple(st)
-print(s1)
-print(s2)
+# st = {1,2,3,4}
+# s1=tuple(st)
+# s2=tuple(st)
+# print(s1)
+# print(s2)
+
+d = {'s':{'tata':1,'baba':'na'}}
+print(d['s']['tata'])

@@ -88,38 +88,36 @@ class dfa:
             return (True,{})
         final_dict = {}
         for final in self.final_state:
-            final_dict[final] = 0
+            dict_ = {'seq':'','seen_num':0}
+            final_dict[final] = dict_
         queue_ = queue.Queue(maxsize=0)
         queue_.put(self.init_state)
         alphabet = list(self.alphabet)
         counter=0
         while not queue_.empty():
             cur_state = queue_.get()
-            state_set = set() 
-            set_cur_state = set()
+            saw_l = []
             for alpha in alphabet:
                 state = self.transition.get((cur_state,alpha))
-                if not self.istrap(state):
+                istrap_ = self.istrap(state)
+                if not istrap_:
                     temp = string_set_all.copy()
                     for char in temp:
                         char+=alpha
                         string_set_all.append(char)
                         if self.isaccept(char):
                             string_set_accept.add(char)
-                set_cur_state.add(state)
-            for state in set_cur_state:
-                if (not self.istrap(state)):
+                if (not istrap_) and (state not in saw_l):
+                    saw_l.append(state)
                     queue_.put(state)
-                    state_set.add(state)
-
-            for s in state_set:
-                if s in self.final_state:
-                    final_dict[s] = final_dict.get(s)+1
-                    if final_dict[s]>=2:
-                        print(f'state name = {s}      size = {final_dict[s]}')
-                        return (False,{})
+                    if state in self.final_state:
+                        final_dict[state]['seen_num'] = final_dict[state]['seen_num']+1
+                        if final_dict[state]['seen_num'] >=2 and (state in final_dict[state]['seq']):
+                            # print(f"state name = {s}      size = { final_dict[s] }")
+                            return (False,{})
+                        final_dict[state]['seq']+=cur_state
             counter+=1;
-            if counter==(1000*len(self.alphabet)*len(self.state)):
+            if counter==(100*len(self.alphabet)*len(self.state)):
                 break
             
 
