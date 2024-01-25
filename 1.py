@@ -116,10 +116,10 @@ class dfa:
                 if s in self.final_state:
                     final_dict[s] = final_dict.get(s)+1
                     if final_dict[s]>=2:
-                        # print(f'state name = {s}      size = {final_dict[s]}')
+                        print(f'state name = {s}      size = {final_dict[s]}')
                         return (False,{})
             counter+=1;
-            if counter==1000:
+            if counter==(1000*len(self.alphabet)*len(self.state)):
                 break
             
 
@@ -130,7 +130,9 @@ class dfa:
 
     def isaccept(self,x):
         # true  =>  x is accepted     /    false  =>  x is not accepted
-        string = x
+        if x==' ':
+            string = x
+        string = x.strip()
         cur_state = self.init_state
         if cur_state in self.final_state:
             flag = True
@@ -208,6 +210,9 @@ class dfa:
                     final_state.add(tuple(s))
             
         #transition
+        empty = set()
+        if empty in merge_state:
+            merge_state.remove(empty)
         for s in merge_state:
             name = tuple(s)
             for alpha in alphabet:
