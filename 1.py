@@ -90,11 +90,15 @@ class dfa:
         for final in self.final_state:
             dict_ = {'seq':'','seen_num':0}
             final_dict[final] = dict_
+        if self.init_state in self.final_state:
+            final_dict[self.init_state]['seen_num'] = final_dict[self.init_state]['seen_num']+1
+            final_dict[self.init_state]['seq']+=self.init_state
         queue_ = queue.Queue(maxsize=0)
         queue_.put(self.init_state)
         alphabet = list(self.alphabet)
         counter=0
         while not queue_.empty():
+            # print(final_dict)
             cur_state = queue_.get()
             saw_l = []
             for alpha in alphabet:
@@ -116,6 +120,9 @@ class dfa:
                             # print(f"state name = {s}      size = { final_dict[s] }")
                             return (False,{})
                         final_dict[state]['seq']+=cur_state
+                    if cur_state in self.final_state:
+                        final_dict[cur_state]['seq']+=cur_state
+                        # final_dict[state]['seq']+=state
             counter+=1;
             if counter==(100*len(self.alphabet)*len(self.state)):
                 break
