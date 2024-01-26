@@ -1,5 +1,6 @@
 import queue
-
+from tkinter import*
+import tkinter as tk
 # all dfas
 dfalist = []
 
@@ -325,51 +326,27 @@ class dfa:
 
 class   Menu:
     def __init__(self):
-        while True:
-            print('options : ')
-            print('\t1- enter a dfa')
-            print('\t2- is the machine language empty ? ')
-            print('\t3- is the machine language finite ? ')
-            print('\t4- is x string accepted or not ? ')
-            print('\t5- minimizing dfa')
-            print('\t6- are the two dfa equal ?')
-            print('\t7- show machine')
-            print('\t8- exit')
-            choose = int(input('enter your selection : \n'))
-            if choose==1:
-                self.enter()
-            elif choose==2:
-                self.isempty()
-            elif choose==3:
-                self.isfinite()
-            elif choose==4:
-                self.isaccept()
-            elif choose==5:
-                self.minimize()
-            elif choose==6:
-                self.isequal()
-            elif choose==7:
-                self.show()
-            elif choose==8:
-                exit()
-
+        pass
     def enter(self,note=''):
-        if note!='from equal':
-            dfalist.clear()
-        print('please enter dfa\'s data : ')
-        alphabet = set(input('write each letter of your alphabet and leave a space between each of them : \n').strip(' ').split(' '))
-        state = set(input('write state\'s name of your dfa and leave a space between each of them : \n').strip(' ').split(' '))
-        init_state = input('write the name of initial state : \n')
-        final_state = set(input('write final states name of your dfa and leave a space between each of them : \n').strip(' ').split(' '))
-        if final_state=={''}:
-            final_state.clear()
-        transition = {}
-        for cur_state in state:
-            for alpha_transfer in alphabet:
-                next_state = input(f'enter the state which   {cur_state}   goes with   {alpha_transfer}   : \n')
-                transition[(cur_state,alpha_transfer)] = next_state
+        try:
+            label.config(text='last action : enter dfa')
+            if note!='from equal':
+                dfalist.clear()
+            text_show.insert(INSERT,'please enter dfa\'s data : (write them in the given order in the entry box)\n')
+            text_show.insert(INSERT,'1 - dfa\'s alphabet : \n');text_entery.insert(INSERT,'1:  \n')
+            text_show.insert(INSERT,'2 - set of dfa\'s states : \n');text_entery.insert(INSERT,'2:  \n')
+            text_show.insert(INSERT,'3 - dfa\'s initial state : \n');text_entery.insert(INSERT,'3:  \n')
+            text_show.insert(INSERT,'4 - set of dfa\'s final states : \n');text_entery.insert(INSERT,'4:  \n')
+            
+            # transition = {}
+            # for cur_state in state:
+            #     for alpha_transfer in alphabet:
+            #         next_state = input(f'enter the state which   {cur_state}   goes with   {alpha_transfer}   : \n')
+            #         transition[(cur_state,alpha_transfer)] = next_state
 
-        dfalist.append(dfa(alphabet,state,init_state,final_state,transition))
+            # dfalist.append(dfa(alphabet,state,init_state,final_state,transition))
+        except:
+            label.config(text='last action : error in entering dfa',fg='red')
 
 
     def isempty(self):
@@ -414,5 +391,111 @@ class   Menu:
     def show(self):
         dfalist[0].show()
 
+    def delete():
+        pass
+enter_counter = 0;alphabet_enter = [];state_enter = []
+def enter():
+    global enter_counter
+    if enter_counter == 0:
+        enter_counter+=1
+        enter_data = text_entery.get(1.0,END)
+        lst = ['']*4;j=0;flag=False
+        for i in range(2,len(enter_data)):
+            if(enter_data[i]!='\n'):
+                if (flag==True and enter_data[i]!=':'):
+                    i+=3
+                    lst[j]+=enter_data[i]
+                elif enter_data[i]!=':':
+                    lst[j]+=enter_data[i]
+                flag=False
+            else:
+                j+=1;flag=True
+        # print(lst)
+        alphabet = list(lst[0].split())
+        state = list(lst[1].split())
+        init_state = lst[2].strip()
+        final_state = set(lst[3].split())
+        if final_state=={''}:
+            final_state.clear()
+        text_entery.delete("1.0","end")
+        text_show.insert(INSERT,'5 - dfa\'s transitions : \n')
+        transition = {};k=0
+        for cur_state in state:
+            for alpha_transfer in alphabet:
+                text_show.insert(INSERT,f'5-{k} {cur_state}---{alpha_transfer}---> : \n')
+                text_entery.insert(INSERT,f'5-{k}: \n')
+                # transition[(cur_state,alpha_transfer)] = next_state
+                k+=1
+        global alphabet_enter ; alphabet_enter = alphabet ; global state_enter ; state_enter = alphabet
+    else:
+        enter_counter = 0
+        enter_data = text_entery.get(1.0,END)
+        lst = ['']*(len(state_enter)*len(alphabet_enter));j=0;flag=False
+        for i in range(3,len(enter_data)):
+            if(enter_data[i]!='\n'):
+                if (flag==True and enter_data[i]!=':'):
+                    i+=3
+                    lst[j]+=enter_data[i]
+                elif enter_data[i]!=':':
+                    lst[j]+=enter_data[i]
+                flag=False
+            else:
+                j+=1;flag=True
+        print(lst)
+
 if __name__=='__main__':
+    window = Tk()
+    window.title("Deterministic Finite Aoutumata (DFA)")
+    # window.geometry('1100x1100')
+    # window.resizable(width=False,height=False)
+
     menu = Menu()
+
+    menu_bar = tk.Menu(window)
+    option_menu = tk.Menu(menu_bar,tearoff=0)
+    option_menu.add_command(label='1- enter a dfa',command=menu.enter)
+    option_menu.add_command(label='2- is the machine language empty ? ',command=menu.isempty)
+    option_menu.add_command(label='3- is the machine language finite ?',command=menu.isfinite)
+    option_menu.add_command(label='4- is x string accepted or not ?',command=menu.isaccept)
+    option_menu.add_command(label='5- minimizing dfa',command=menu.minimize)
+    option_menu.add_command(label='6- are the two dfa equal ?',command=menu.isequal)
+    option_menu.add_command(label='7- show machine',command=menu.show)
+    option_menu.add_command(label='8- delete all data in boxes',command=menu.delete)
+    option_menu.add_command(label='9- exit',command=quit)
+    menu_bar.add_cascade(label='..........................options.......................... ',menu=option_menu)
+    window.config(menu=menu_bar)
+
+    frame = LabelFrame(window,text='DFA\'s data',fg='blue')
+    frame.pack(padx=5,pady=5)
+
+    frame_show = LabelFrame(frame,text='show box',fg='blue')
+    frame_show.pack(padx=5,pady=5)
+
+    scrollbar_ = Scrollbar(frame_show)
+    scrollbar_.pack( side = RIGHT, fill=BOTH , expand=True)
+
+    text_show = Text(frame_show,height=15,width=120,yscrollcommand = scrollbar_.set)
+    text_show.pack(side = LEFT, fill = BOTH)
+
+    scrollbar_.config( command = text_show.yview )
+
+    frame_entry = LabelFrame(frame,text='entry box',fg='blue')
+    frame_entry.pack(padx=5,pady=5)
+
+    scrollbar = Scrollbar(frame_entry)
+    scrollbar.pack( side = RIGHT, fill=BOTH , expand=True)
+
+    text_entery = Text(frame_entry,height=15,width=120,yscrollcommand = scrollbar.set)
+
+    text_entery.pack( side = LEFT, fill = BOTH )
+    scrollbar.config( command = text_entery.yview )
+
+    btm = Button(frame,text='enter data',fg='blue',command=enter)
+    btm.pack(anchor='center',padx=5,pady=5)
+
+    label = Label(frame,text='last action : nothing',border=5,fg='blue')
+    label.pack(anchor='center')
+
+  
+
+    window.mainloop()
