@@ -1,6 +1,8 @@
 import queue
 from tkinter import*
 import tkinter as tk
+from PIL import Image,ImageTk
+
 # all dfas
 dfalist = []
 enter_counter = 0;alphabet_enter = [];state_enter = [];init_state_enter='';final_state_enter={};transition_enter=dict()
@@ -395,13 +397,6 @@ class   Menu:
             label.config(text='last action : isequal ',fg='blue')
             text_show.insert(INSERT,'\n HINT : DFAS ALPHABET SHOULD BE THE SAME . \n')
             self.enter('from equal')
-            if dfalist[0].isequal(dfalist[1]):
-                text_show.insert(INSERT,'\ntwo dfas are equal . \n')
-            else:
-                text_show.insert(INSERT,'\ntwo dfas are NOT equal . \n')
-            temp = dfalist[0]
-            dfalist.clear()
-            dfalist.append(temp)
         except:
             label.config(text='last action : error in isequal ',fg='red')
     
@@ -550,59 +545,71 @@ def enter():
         dfalist.clear()
         dfalist.append(temp)
 
+
+def start_():
+        global menu_bar,text_show,text_entery,label
+        menu_bar = tk.Menu(window)
+        option_menu = tk.Menu(menu_bar,tearoff=0)
+        option_menu.add_command(label='1- enter a dfa',command=menu.enter)
+        option_menu.add_command(label='2- is the machine language empty ? ',command=menu.isempty)
+        option_menu.add_command(label='3- is the machine language finite ?',command=menu.isfinite)
+        option_menu.add_command(label='4- is x string accepted or not ?',command=menu.isaccept)
+        option_menu.add_command(label='5- minimizing dfa',command=menu.minimize)
+        option_menu.add_command(label='6- are the two dfa equal ?',command=menu.isequal)
+        option_menu.add_command(label='7- show machine',command=menu.show)
+        option_menu.add_command(label='8- delete all data in boxes',command=menu.delete)
+        option_menu.add_command(label='9- exit',command=quit)
+        menu_bar.add_cascade(label='..........................options.......................... ',menu=option_menu)
+        window.config(menu=menu_bar)
+
+        frame = LabelFrame(image_lable,text='DFA\'s data',fg='blue')
+        frame.pack(padx=5,pady=5)
+
+        frame_show = LabelFrame(frame,text='show box',fg='blue')
+        frame_show.pack(padx=5,pady=5)
+
+        scrollbar_ = Scrollbar(frame_show)
+        scrollbar_.pack( side = RIGHT, fill=BOTH , expand=True)
+
+        text_show = Text(frame_show,height=15,width=120,yscrollcommand = scrollbar_.set)
+        text_show.pack(side = LEFT, fill = BOTH)
+
+        scrollbar_.config( command = text_show.yview )
+
+        frame_entry = LabelFrame(frame,text='entry box',fg='blue')
+        frame_entry.pack(padx=5,pady=5)
+
+        scrollbar = Scrollbar(frame_entry)
+        scrollbar.pack( side = RIGHT, fill=BOTH , expand=True)
+
+        text_entery = Text(frame_entry,height=15,width=120,yscrollcommand = scrollbar.set)
+
+        text_entery.pack( side = LEFT, fill = BOTH )
+        scrollbar.config( command = text_entery.yview )
+
+        btm = Button(frame,text='enter data',fg='blue',command=enter)
+        btm.pack(anchor='center',padx=5,pady=5)
+
+        label = Label(frame,text='last action : nothing',border=5,fg='blue')
+        label.pack(anchor='center')
+
+        ob.pack_forget()
+
 if __name__=='__main__':
     window = Tk()
     window.title("Deterministic Finite Aoutumata (DFA)")
-    # window.geometry('1100x1100')
-    # window.resizable(width=False,height=False)
+    window.iconbitmap('icon.ico')
+    window.state('zoomed')
+    w=window.winfo_screenwidth()
+    h=window.winfo_screenheight()
+    cavas = Canvas(window,width=w,height=h)
+    cavas.pack()
+    image = ImageTk.PhotoImage(file='dfa.jpg')
+    image_lable = Label(cavas,image=image)
+    image_lable.pack(ipadx=600,ipady=600)
+    ob = Button(image_lable,text='click here to start',fg='blue',height=1,width=20,font=('na',30),command=start_)
+    ob.pack(anchor='center',pady=20)
 
     menu = Menu()
-
-    menu_bar = tk.Menu(window)
-    option_menu = tk.Menu(menu_bar,tearoff=0)
-    option_menu.add_command(label='1- enter a dfa',command=menu.enter)
-    option_menu.add_command(label='2- is the machine language empty ? ',command=menu.isempty)
-    option_menu.add_command(label='3- is the machine language finite ?',command=menu.isfinite)
-    option_menu.add_command(label='4- is x string accepted or not ?',command=menu.isaccept)
-    option_menu.add_command(label='5- minimizing dfa',command=menu.minimize)
-    option_menu.add_command(label='6- are the two dfa equal ?',command=menu.isequal)
-    option_menu.add_command(label='7- show machine',command=menu.show)
-    option_menu.add_command(label='8- delete all data in boxes',command=menu.delete)
-    option_menu.add_command(label='9- exit',command=quit)
-    menu_bar.add_cascade(label='..........................options.......................... ',menu=option_menu)
-    window.config(menu=menu_bar)
-
-    frame = LabelFrame(window,text='DFA\'s data',fg='blue')
-    frame.pack(padx=5,pady=5)
-
-    frame_show = LabelFrame(frame,text='show box',fg='blue')
-    frame_show.pack(padx=5,pady=5)
-
-    scrollbar_ = Scrollbar(frame_show)
-    scrollbar_.pack( side = RIGHT, fill=BOTH , expand=True)
-
-    text_show = Text(frame_show,height=15,width=120,yscrollcommand = scrollbar_.set)
-    text_show.pack(side = LEFT, fill = BOTH)
-
-    scrollbar_.config( command = text_show.yview )
-
-    frame_entry = LabelFrame(frame,text='entry box',fg='blue')
-    frame_entry.pack(padx=5,pady=5)
-
-    scrollbar = Scrollbar(frame_entry)
-    scrollbar.pack( side = RIGHT, fill=BOTH , expand=True)
-
-    text_entery = Text(frame_entry,height=15,width=120,yscrollcommand = scrollbar.set)
-
-    text_entery.pack( side = LEFT, fill = BOTH )
-    scrollbar.config( command = text_entery.yview )
-
-    btm = Button(frame,text='enter data',fg='blue',command=enter)
-    btm.pack(anchor='center',padx=5,pady=5)
-
-    label = Label(frame,text='last action : nothing',border=5,fg='blue')
-    label.pack(anchor='center')
-
-  
 
     window.mainloop()

@@ -221,12 +221,12 @@
 # root.mainloop()
 
 
-if(enter_data[i]!='\n'):
-                if (flag==True and enter_data[i]!=':'):
-                    i+=3
-                    lst[j]+=enter_data[i]
-                elif enter_data[i]!=':':
-                    lst[j]+=enter_data[i]
-                flag=False
-            else:
-                j+=1;flag=True
+# if(enter_data[i]!='\n'):
+#                 if (flag==True and enter_data[i]!=':'):
+#                     i+=3
+#                     lst[j]+=enter_data[i]
+#                 elif enter_data[i]!=':':
+#                     lst[j]+=enter_data[i]
+#                 flag=False
+#             else:
+#                 j+=1;flag=True
