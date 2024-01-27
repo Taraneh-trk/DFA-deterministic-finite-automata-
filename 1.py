@@ -3,6 +3,7 @@ from tkinter import*
 import tkinter as tk
 # all dfas
 dfalist = []
+enter_counter = 0;alphabet_enter = [];state_enter = [];init_state_enter='';final_state_enter={};transition_enter=dict()
 
 def copy(self,me):
     new_list = []
@@ -315,15 +316,14 @@ class dfa:
         return True
     
     def show(self):
-        print(f'\nalphabet : {self.alphabet}')
-        print(f'states : {self.state}')
-        print(f'initial state : {self.init_state}')
-        print(f'final states : {self.final_state}')
-        print('transitions : \n')
+        text_show.insert(INSERT,f'\nalphabet : {self.alphabet}')
+        text_show.insert(INSERT,f'\nstates : {self.state}')
+        text_show.insert(INSERT,f'\ninitial state : {self.init_state}')
+        text_show.insert(INSERT,f'\nfinal states : {self.final_state}')
+        text_show.insert(INSERT,'\ntransitions : ')
         for (cur_state,alpha),next_state in self.transition.items():
-            print(f'{cur_state}   --({alpha})-->   {next_state}')
-        print()
-
+            text_show.insert(INSERT,f'\n{cur_state}   --({alpha})-->   {next_state}')
+        text_show.insert(INSERT,f'\n')
 class   Menu:
     def __init__(self):
         pass
@@ -331,85 +331,174 @@ class   Menu:
         try:
             label.config(text='last action : enter dfa')
             if note!='from equal':
+                global enter_counter ; enter_counter=0
                 dfalist.clear()
-            text_show.insert(INSERT,'please enter dfa\'s data : (write them in the given order in the entry box)\n')
-            text_show.insert(INSERT,'1 - dfa\'s alphabet : \n');text_entery.insert(INSERT,'1:  \n')
-            text_show.insert(INSERT,'2 - set of dfa\'s states : \n');text_entery.insert(INSERT,'2:  \n')
-            text_show.insert(INSERT,'3 - dfa\'s initial state : \n');text_entery.insert(INSERT,'3:  \n')
-            text_show.insert(INSERT,'4 - set of dfa\'s final states : \n');text_entery.insert(INSERT,'4:  \n')
-            
-            # transition = {}
-            # for cur_state in state:
-            #     for alpha_transfer in alphabet:
-            #         next_state = input(f'enter the state which   {cur_state}   goes with   {alpha_transfer}   : \n')
-            #         transition[(cur_state,alpha_transfer)] = next_state
+                text_show.insert(INSERT,'please enter dfa\'s data : (write them in the given order in the entry box)\n')
+                text_show.insert(INSERT,'1 - dfa\'s alphabet : \n');text_entery.insert(INSERT,'1- dfa\'s alphabet: \n')
+                text_show.insert(INSERT,'2 - set of dfa\'s states : \n');text_entery.insert(INSERT,'2- set of dfa\'s states: \n')
+                text_show.insert(INSERT,'3 - dfa\'s initial state : \n');text_entery.insert(INSERT,'3- dfa\'s initial state: \n')
+                text_show.insert(INSERT,'4 - set of dfa\'s final states : \n');text_entery.insert(INSERT,'4- set of dfa\'s final states: \n')
+            else:
+                enter_counter=3
+                text_entery.insert(INSERT,'1- dfa\'s alphabet: \n')
+                text_entery.insert(INSERT,'2- set of dfa\'s states: \n')
+                text_entery.insert(INSERT,'3- dfa\'s initial state: \n')
+                text_entery.insert(INSERT,'4- set of dfa\'s final states: \n')
 
-            # dfalist.append(dfa(alphabet,state,init_state,final_state,transition))
         except:
             label.config(text='last action : error in entering dfa',fg='red')
 
 
     def isempty(self):
-        if dfalist[0].isempty() :
-            print('\tmachine language is empty . \n')
-        else:
-            print('\tNOT empty\n')
-        # print(dfalist[0].isunreachable('q3'))
+        try:
+            label.config(text='last action : isempty ',fg='blue')
+            if dfalist[0].isempty() :
+                text_show.insert(INSERT,'\nmachine language is empty . \n')
+            else:
+                text_show.insert(INSERT,'\nmachine language is NOT empty\n')
+        except:
+            label.config(text='last action : error in isempty ',fg='red')
 
     def isfinite(self):
-        flag,string_set = dfalist[0].isfinite()
-        if flag==True:
-            print('\nmachine language is finite . ')
-            print(f'number of strings in machine language = {len(string_set)} . ')
-            print(f'accepted strings by dfa are as follow : {string_set}\n')
-        else:
-            print('\nmachine language is NOT finite . \n')
+        try:
+            label.config(text='last action : isfinite ',fg='blue')
+            flag,string_set = dfalist[0].isfinite()
+            if flag==True:
+                text_show.insert(INSERT,'\nmachine language is finite . \n')
+                text_show.insert(INSERT,f'number of strings in machine language = {len(string_set)} . \n')
+                text_show.insert(INSERT,f'accepted strings by dfa are as follow : {string_set} \n')
+            else:
+                text_show.insert(INSERT,'\nmachine language is NOT finite . \n')
+        except:
+            label.config(text='last action : error in isfinite ',fg='red')
 
     def isaccept(self):
-        x = input(f'\nenter a string made of   {dfalist[0].alphabet}   that you want to know if it\'s in dfa language or not . \n')
-        if dfalist[0].isaccept(x):
-            print(f'\n{x} string is accepted by dfa . \n')
-        else:
-            print(f'\n{x} string is NOT accepted by dfa . \n')
+        try:
+            label.config(text='last action : isaccept ',fg='blue')
+            text_entery.insert(INSERT,f'\nenter a string made of   {dfalist[0].alphabet}   that you want to know if it\'s in dfa language or not :')
+            global enter_counter ; enter_counter = 2
+            text_show.insert(INSERT,'\nyour entered string :  ')
+        except:
+            label.config(text='last action : error in isaccept ',fg='red')
 
     def minimize(self):
-        mini_dfa = dfalist[0].minimize()
-        print('\nminimized dfa : \n')
-        mini_dfa.show()
+        try:
+            label.config(text='last action : minimize dfa ',fg='blue')
+            mini_dfa = dfalist[0].minimize()
+            text_show.insert(INSERT,'\nminimized dfa : \n')
+            mini_dfa.show()
+        except:
+            label.config(text='last action : error in minimize dfa ',fg='red')
 
     def isequal(self):
-        print('\n HINT : DFAS ALPHABET SHOULD BE THE SAME . \n')
-        self.enter('from equal')
-        if dfalist[0].isequal(dfalist[1]):
-            print('\ntwo dfas are equal . \n')
-        else:
-            print('\ntwo dfas are NOT equal . \n')
-        temp = dfalist[0]
-        dfalist.clear()
-        dfalist.append(temp)
+        try:
+            label.config(text='last action : isequal ',fg='blue')
+            text_show.insert(INSERT,'\n HINT : DFAS ALPHABET SHOULD BE THE SAME . \n')
+            self.enter('from equal')
+            if dfalist[0].isequal(dfalist[1]):
+                text_show.insert(INSERT,'\ntwo dfas are equal . \n')
+            else:
+                text_show.insert(INSERT,'\ntwo dfas are NOT equal . \n')
+            temp = dfalist[0]
+            dfalist.clear()
+            dfalist.append(temp)
+        except:
+            label.config(text='last action : error in isequal ',fg='red')
     
     def show(self):
         dfalist[0].show()
 
-    def delete():
-        pass
-enter_counter = 0;alphabet_enter = [];state_enter = []
+    def delete(self):
+        text_entery.delete("1.0","end")
+        text_show.delete("1.0","end")
+
 def enter():
     global enter_counter
     if enter_counter == 0:
         enter_counter+=1
         enter_data = text_entery.get(1.0,END)
         lst = ['']*4;j=0;flag=False
-        for i in range(2,len(enter_data)):
-            if(enter_data[i]!='\n'):
-                if (flag==True and enter_data[i]!=':'):
-                    i+=3
-                    lst[j]+=enter_data[i]
-                elif enter_data[i]!=':':
-                    lst[j]+=enter_data[i]
-                flag=False
-            else:
-                j+=1;flag=True
+        for i in range(len(enter_data)):
+            if(flag==False and enter_data[i]==':'):
+                flag = True
+            elif (flag==False and enter_data[i]!='\n'):
+                continue
+            elif (flag==True and enter_data[i]=='\n'):
+                j+=1;flag=False
+            elif (flag==True and enter_data[i]!='\n'):
+                lst[j]+=enter_data[i]
+        # print(lst)
+        alphabet = list(lst[0].split())
+        state = list(lst[1].split())
+        init_state = lst[2].strip()
+        final_state = set(lst[3].split())
+        if final_state=={''}:
+            final_state.clear()
+        text_entery.delete("1.0","end")#are equal ....
+        text_show.delete("1.0","end")
+        text_show.insert(INSERT,enter_data)
+        text_show.insert(INSERT,'5 - dfa\'s transitions : \n')
+        k=0
+        for cur_state in state:
+            for alpha_transfer in alphabet:
+                text_entery.insert(INSERT,f'5-{k} {cur_state}---{alpha_transfer}---> : \n');k+=1
+        global alphabet_enter ; alphabet_enter = alphabet ; global state_enter ; state_enter = state
+        global init_state_enter ; init_state_enter = init_state ; global final_state_enter ; final_state_enter = final_state
+    elif enter_counter==1:
+        enter_counter = 0
+        enter_data = text_entery.get(1.0,END)
+        lst = ['']*(len(state_enter)*len(alphabet_enter));j=0;flag=False
+        for i in range(len(enter_data)):
+            if(flag==False and enter_data[i]==':'):
+                flag = True
+            elif (flag==False and enter_data[i]!='\n'):
+                continue
+            elif (flag==True and enter_data[i]=='\n'):
+                j+=1;flag=False
+            elif (flag==True and enter_data[i]!='\n'):
+                # print(f'j = {j}  i = {i}')
+                lst[j]+=enter_data[i]
+        for i in range(len(lst)):
+            lst[i]=lst[i].strip()
+        # print(lst)
+        transition = {};index=0
+        for cur_state_index in range(len(state_enter)):
+            for alpha_transfer_index in range(len(alphabet_enter)):
+                transition[(state_enter[cur_state_index],alphabet_enter[alpha_transfer_index])] = lst[index];index+=1
+        global transition_enter ; transition_enter = transition
+        text_show.insert(INSERT,enter_data)
+        text_entery.delete("1.0","end")
+
+        dfalist.append(dfa(set(alphabet_enter),set(state_enter),init_state_enter,final_state_enter,transition_enter))
+    elif enter_counter==2:
+        x='';flag=False
+        enter_data = text_entery.get(1.0,END)
+        text_entery.delete("1.0","end")
+        for i in range(len(enter_data)):
+            if(flag==False and enter_data[i]==':'):
+                flag = True
+            elif (flag==True):
+                # print(f'j = {j}  i = {i}')
+                x+=enter_data[i]
+        x = x.strip()
+        text_show.insert(INSERT,f'{x} \n')
+        if dfalist[0].isaccept(x):
+            text_show.insert(INSERT,f'\n{x} string is accepted by dfa . \n')
+        else:
+            text_show.insert(INSERT,f'\n{x} string is NOT accepted by dfa . \n')
+    elif enter_counter==3:
+        enter_counter+=1
+        enter_data = text_entery.get(1.0,END)
+        lst = ['']*4;j=0;flag=False
+        for i in range(len(enter_data)):
+            if(flag==False and enter_data[i]==':'):
+                flag = True
+            elif (flag==False and enter_data[i]!='\n'):
+                continue
+            elif (flag==True and enter_data[i]=='\n'):
+                j+=1;flag=False
+            elif (flag==True and enter_data[i]!='\n'):
+                lst[j]+=enter_data[i]
         # print(lst)
         alphabet = list(lst[0].split())
         state = list(lst[1].split())
@@ -418,30 +507,48 @@ def enter():
         if final_state=={''}:
             final_state.clear()
         text_entery.delete("1.0","end")
+        text_show.insert(INSERT,enter_data)
         text_show.insert(INSERT,'5 - dfa\'s transitions : \n')
-        transition = {};k=0
+        k=0
         for cur_state in state:
             for alpha_transfer in alphabet:
-                text_show.insert(INSERT,f'5-{k} {cur_state}---{alpha_transfer}---> : \n')
-                text_entery.insert(INSERT,f'5-{k}: \n')
-                # transition[(cur_state,alpha_transfer)] = next_state
-                k+=1
-        global alphabet_enter ; alphabet_enter = alphabet ; global state_enter ; state_enter = alphabet
-    else:
-        enter_counter = 0
+                text_entery.insert(INSERT,f'5-{k} {cur_state}---{alpha_transfer}---> : \n');k+=1
+        alphabet_enter = alphabet ; state_enter = state
+        init_state_enter = init_state ; final_state_enter = final_state
+
+    elif enter_counter==4:
         enter_data = text_entery.get(1.0,END)
         lst = ['']*(len(state_enter)*len(alphabet_enter));j=0;flag=False
-        for i in range(3,len(enter_data)):
-            if(enter_data[i]!='\n'):
-                if (flag==True and enter_data[i]!=':'):
-                    i+=3
-                    lst[j]+=enter_data[i]
-                elif enter_data[i]!=':':
-                    lst[j]+=enter_data[i]
-                flag=False
-            else:
-                j+=1;flag=True
-        print(lst)
+        for i in range(len(enter_data)):
+            if(flag==False and enter_data[i]==':'):
+                flag = True
+            elif (flag==False and enter_data[i]!='\n'):
+                continue
+            elif (flag==True and enter_data[i]=='\n'):
+                j+=1;flag=False
+            elif (flag==True and enter_data[i]!='\n'):
+                # print(f'j = {j}  i = {i}')
+                lst[j]+=enter_data[i]
+        for i in range(len(lst)):
+            lst[i]=lst[i].strip()
+        # print(lst)
+        transition = {};index=0
+        for cur_state_index in range(len(state_enter)):
+            for alpha_transfer_index in range(len(alphabet_enter)):
+                transition[(state_enter[cur_state_index],alphabet_enter[alpha_transfer_index])] = lst[index];index+=1
+        transition_enter = transition
+        text_show.insert(INSERT,enter_data)
+        text_entery.delete("1.0","end")
+
+        dfalist.append(dfa(set(alphabet_enter),set(state_enter),init_state_enter,final_state_enter,transition_enter))
+
+        if dfalist[0].isequal(dfalist[1]):
+            text_show.insert(INSERT,'two dfas are equal . \n')
+        else:
+            text_show.insert(INSERT,'two dfas are NOT equal . \n')
+        temp = dfalist[0]
+        dfalist.clear()
+        dfalist.append(temp)
 
 if __name__=='__main__':
     window = Tk()
