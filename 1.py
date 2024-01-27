@@ -223,6 +223,9 @@ class dfa:
         empty = set()
         if empty in merge_state:
             merge_state.remove(empty)
+        empty = tuple()
+        if empty in states:
+            states.remove(empty)
         for s in merge_state:
             name = tuple(s)
             for alpha in alphabet:
@@ -232,6 +235,8 @@ class dfa:
                     if name0_alpha in q:
                         name_alpha = q
                 transition[(name,alpha)] = name_alpha
+
+
 
         return dfa(alphabet,states,init_state,final_state,transition)
 
@@ -337,16 +342,16 @@ class   Menu:
                 global enter_counter ; enter_counter=0
                 dfalist.clear()
                 text_show.insert(INSERT,'please enter dfa\'s data : (write them in the given order in the entry box)\n')
-                text_show.insert(INSERT,'1 - dfa\'s alphabet : \n');text_entery.insert(INSERT,'1- dfa\'s alphabet: \n')
-                text_show.insert(INSERT,'2 - set of dfa\'s states : \n');text_entery.insert(INSERT,'2- set of dfa\'s states: \n')
-                text_show.insert(INSERT,'3 - dfa\'s initial state : \n');text_entery.insert(INSERT,'3- dfa\'s initial state: \n')
-                text_show.insert(INSERT,'4 - set of dfa\'s final states : \n');text_entery.insert(INSERT,'4- set of dfa\'s final states: \n')
+                text_entery.insert(INSERT,'1- dfa\'s alphabet: \n')
+                text_entery.insert(INSERT,'2- set of dfa\'s states: \n')
+                text_entery.insert(INSERT,'3- dfa\'s initial state: \n')
+                text_entery.insert(INSERT,'4- set of dfa\'s final states: ')
             else:
                 enter_counter=3
                 text_entery.insert(INSERT,'1- dfa\'s alphabet: \n')
                 text_entery.insert(INSERT,'2- set of dfa\'s states: \n')
                 text_entery.insert(INSERT,'3- dfa\'s initial state: \n')
-                text_entery.insert(INSERT,'4- set of dfa\'s final states: \n')
+                text_entery.insert(INSERT,'4- set of dfa\'s final states: ')
 
         except:
             label.config(text='last action : error in entering dfa',fg='red')
