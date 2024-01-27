@@ -2,6 +2,7 @@ import queue
 from tkinter import*
 import tkinter as tk
 from PIL import Image,ImageTk
+from tkinter import messagebox
 
 # all dfas
 dfalist = []
@@ -353,7 +354,7 @@ class   Menu:
 
     def isempty(self):
         try:
-            label.config(text='last action : isempty ',fg='blue')
+            label.config(text='last action : isempty ',fg='dodger blue')
             if dfalist[0].isempty() :
                 text_show.insert(INSERT,'\nmachine language is empty . \n')
             else:
@@ -363,7 +364,7 @@ class   Menu:
 
     def isfinite(self):
         try:
-            label.config(text='last action : isfinite ',fg='blue')
+            label.config(text='last action : isfinite ',fg='dodger blue')
             flag,string_set = dfalist[0].isfinite()
             if flag==True:
                 text_show.insert(INSERT,'\nmachine language is finite . \n')
@@ -376,7 +377,7 @@ class   Menu:
 
     def isaccept(self):
         try:
-            label.config(text='last action : isaccept ',fg='blue')
+            label.config(text='last action : isaccept ',fg='dodger blue')
             text_entery.insert(INSERT,f'\nenter a string made of   {dfalist[0].alphabet}   that you want to know if it\'s in dfa language or not :')
             global enter_counter ; enter_counter = 2
             text_show.insert(INSERT,'\nyour entered string :  ')
@@ -385,7 +386,7 @@ class   Menu:
 
     def minimize(self):
         try:
-            label.config(text='last action : minimize dfa ',fg='blue')
+            label.config(text='last action : minimize dfa ',fg='dodger blue')
             mini_dfa = dfalist[0].minimize()
             text_show.insert(INSERT,'\nminimized dfa : \n')
             mini_dfa.show()
@@ -394,8 +395,9 @@ class   Menu:
 
     def isequal(self):
         try:
-            label.config(text='last action : isequal ',fg='blue')
+            label.config(text='last action : isequal ',fg='dodger blue')
             text_show.insert(INSERT,'\n HINT : DFAS ALPHABET SHOULD BE THE SAME . \n')
+            messagebox.showerror('error','DFAS ALPHABET SHOULD BE THE SAME')
             self.enter('from equal')
         except:
             label.config(text='last action : error in isequal ',fg='red')
@@ -562,38 +564,41 @@ def start_():
         menu_bar.add_cascade(label='..........................options.......................... ',menu=option_menu)
         window.config(menu=menu_bar)
 
-        frame = LabelFrame(image_lable,text='DFA\'s data',fg='blue')
+        frame = LabelFrame(image_lable,text='DFA\'s data',fg='dodger blue',bg='lightblue1')
         frame.pack(padx=5,pady=5)
 
-        frame_show = LabelFrame(frame,text='show box',fg='blue')
+        frame_show = LabelFrame(frame,text='show box',fg='dodger blue',bg='lightblue1')
         frame_show.pack(padx=5,pady=5)
 
         scrollbar_ = Scrollbar(frame_show)
         scrollbar_.pack( side = RIGHT, fill=BOTH , expand=True)
 
-        text_show = Text(frame_show,height=15,width=120,yscrollcommand = scrollbar_.set)
+        text_show = Text(frame_show,height=15,width=120,yscrollcommand = scrollbar_.set,background='azure',fg='dodger blue')
         text_show.pack(side = LEFT, fill = BOTH)
 
         scrollbar_.config( command = text_show.yview )
 
-        frame_entry = LabelFrame(frame,text='entry box',fg='blue')
+        frame_entry = LabelFrame(frame,text='entry box',fg='dodger blue',bg='lightblue1')
         frame_entry.pack(padx=5,pady=5)
 
         scrollbar = Scrollbar(frame_entry)
         scrollbar.pack( side = RIGHT, fill=BOTH , expand=True)
 
-        text_entery = Text(frame_entry,height=15,width=120,yscrollcommand = scrollbar.set)
+        text_entery = Text(frame_entry,height=15,width=120,yscrollcommand = scrollbar.set,background='azure',fg='dodger blue')
 
         text_entery.pack( side = LEFT, fill = BOTH )
         scrollbar.config( command = text_entery.yview )
 
-        btm = Button(frame,text='enter data',fg='blue',command=enter)
-        btm.pack(anchor='center',padx=5,pady=5)
+        btm = Button(frame,text='enter data',fg='dodger blue',command=enter,width=120,bg='lavender blush')
+        btm.pack(anchor='center',padx=5)
 
-        label = Label(frame,text='last action : nothing',border=5,fg='blue')
+        label = Label(frame,text='last action : nothing',border=6,fg='dodger blue',width=119,bg='misty rose')
         label.pack(anchor='center')
 
         ob.pack_forget()
+
+        messagebox.showerror('error','DO NOT WRITE OR CLICK IN SHOW BOX')
+
 
 if __name__=='__main__':
     window = Tk()
@@ -607,9 +612,9 @@ if __name__=='__main__':
     image = ImageTk.PhotoImage(file='dfa.jpg')
     image_lable = Label(cavas,image=image)
     image_lable.pack(ipadx=600,ipady=600)
-    ob = Button(image_lable,text='click here to start',fg='blue',height=1,width=20,font=('na',30),command=start_)
+    ob = Button(image_lable,text='click here to start',fg='dodger blue',height=1,width=20,font=('na',30),command=start_,bg='azure')
     ob.pack(anchor='center',pady=20)
-
+    messagebox.showinfo('author','this app is created by taraneh')
     menu = Menu()
 
     window.mainloop()
